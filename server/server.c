@@ -1,13 +1,16 @@
-#include <assert.h>
-#include <signal.h>
-#include <stdbool.h> /* false */
-#include <stdio.h> /* perror */
-#include <stdlib.h> /* EXIT_SUCCESS, EXIT_FAILURE */
-#include <sys/wait.h> /* wait, sleep */
-#include <unistd.h> /* fork, write */
-#include "libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lgeoffro <lgeoffro@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/08/19 04:48:30 by lgeoffro          #+#    #+#             */
+/*   Updated: 2021/08/19 23:46:46 by lgeoffro         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	sig_handler(int sig);
+#include "server.h"
 
 int	bin_to_dec(int bnum)
 {
@@ -44,25 +47,33 @@ void	put_bin(int r_bit)
 	}
 }
 
-void	sig_handler(int sig)
+void	ft_sig_handler(int sig, siginfo_t *siginfo, void *context)
 {
 	if (sig == SIGUSR1)
-		put_bin(0);
+		ft_putstr("0");
 	else if (sig == SIGUSR2)
-		put_bin(1);
+		ft_putstr("1");
+	(void)siginfo;
+	(void)context;
 }
 
 int	main(int argc, char **argv)
 {
+	struct sigaction info;
+
+	memset (&info, '\0', sizeof(info));
 	ft_putstr("PID: ");
 	ft_putnbr(getpid());
 	ft_putstr("\n");
-	signal(SIGUSR1, sig_handler);
-	signal(SIGUSR2, sig_handler);
+
+	info.sa_sigaction = &ft_sig_handler;
+
+	info.sa_flags = SA_SIGINFO;
+
+	sigaction(SIGUSR1, &info, NULL);
+	sigaction(SIGUSR2, &info, NULL);
 	while (1)
-	{
 		pause();
-	}
 	(void)argv;
 	(void)argc;
 	return (0);

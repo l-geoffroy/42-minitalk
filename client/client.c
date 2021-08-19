@@ -50,6 +50,13 @@ void	send_bin(char *binstr, int pid)
 		usleep(50);
 		i++;
 	}
+	i = 0;
+	while (i < 8)
+	{
+		kill(pid, SIGUSR1);
+		usleep(50);
+		i++;
+	}
 }
 
 int	main(int argc, char **argv)
