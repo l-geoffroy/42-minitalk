@@ -54,7 +54,7 @@ void	send_bin(char *binstr, int pid)
 	while (i < 8)
 	{
 		kill(pid, SIGUSR1);
-		usleep(50);
+		usleep(500000);
 		i++;
 	}
 }
@@ -62,6 +62,8 @@ void	send_bin(char *binstr, int pid)
 int	main(int argc, char **argv)
 {
 	char	*bin;
+	char	*bin_len;
+	int		str_len;
 
 	if (argc != 3)
 	{
@@ -74,6 +76,10 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	bin = ft_ascii_to_bin(argv[2]);
+	str_len = ft_strlen(argv[2]);
+	bin_len = ft_ascii_to_bin(ft_itoa(str_len));
+	printf("str_len : %d\nft_itoa(str_len) : %s\nbin_len : %s\n", str_len, ft_itoa(str_len), bin_len);
+	send_bin(bin_len, ft_atoi(argv[1]));
 	send_bin(bin, ft_atoi(argv[1]));
 	free(bin);
 	return (0);
