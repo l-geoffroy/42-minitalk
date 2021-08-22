@@ -1,69 +1,40 @@
-#include <assert.h>
-#include <signal.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include "libft.h"
+#include "client.h"
 
-char	*ft_ascii_to_bin(char *s)
+void	ft_sig_handler(int sig, siginfo_t *siginfo, void *context)
 {
-	size_t	i;
-	char	*binary;
-	int		j;
-	char	ch;
-
-	if (s == NULL)
-		return (0);
-	binary = malloc(ft_strlen(s) * 8 + 1);
-	i = 0;
-	while (i < ft_strlen(s))
+	if (sig == SIGUSR2)
 	{
-		ch = s[i];
-		j = 7;
-		while (j >= 0)
-		{
-			if (ch & (1 << j))
-				ft_strcat(binary, "1");
-			else
-				ft_strcat(binary, "0");
-			j--;
-		}
-		i++;
+		ft_putstr("[Message successfully received]\n");
+		exit(0);
 	}
-	return (binary);
+	(void)siginfo;
+	(void)context;
 }
 
-void	send_bin(char *binstr, int pid)
-{
-	int	binstr_len;
-	int	i;
-
-	binstr_len = ft_strlen(binstr);
-	i = 0;
-	while (i < binstr_len)
-	{
-		if (binstr[i] == '1')
-			kill(pid, SIGUSR2);
-		else if (binstr[i] == '0')
-			kill(pid, SIGUSR1);
-		usleep(50);
-		i++;
-	}
-	i = 0;
-	while (i < 8)
-	{
-		kill(pid, SIGUSR1);
-		usleep(500000);
-		i++;
-	}
-}
-
-int	main(int argc, char **argv)
+int	sender_core(char **argv)
 {
 	char	*bin;
 	char	*bin_len;
 	int		str_len;
+	int		client_pid;
+
+	client_pid = getpid();
+	bin = ft_ascii_to_bin(argv[2]);
+	str_len = ft_strlen(argv[2]);
+	bin_len = ft_ascii_to_bin(ft_itoa(str_len));
+	usleep((client_pid % 100) * 5 + 123);
+	send_bin(bin_len, ft_atoi(argv[1]));
+	usleep(200);
+	send_bin(bin, ft_atoi(argv[1]));
+	free(bin);
+	return (str_len);
+}
+
+int	main(int argc, char **argv)
+{
+	struct sigaction	info;
+	int					timer_c;
+	int					timer;
 
 	if (argc != 3)
 	{
@@ -75,12 +46,13 @@ int	main(int argc, char **argv)
 		ft_putstr("Invalid PID.\n");
 		return (1);
 	}
-	bin = ft_ascii_to_bin(argv[2]);
-	str_len = ft_strlen(argv[2]);
-	bin_len = ft_ascii_to_bin(ft_itoa(str_len));
-	printf("str_len : %d\nft_itoa(str_len) : %s\nbin_len : %s\n", str_len, ft_itoa(str_len), bin_len);
-	send_bin(bin_len, ft_atoi(argv[1]));
-	send_bin(bin, ft_atoi(argv[1]));
-	free(bin);
+	timer_c = 0;
+	info.sa_sigaction = &ft_sig_handler;
+	info.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR2, &info, NULL);
+	timer = sender_core(argv) - 1;
+	while (1 && timer_c++ < timer)
+		usleep(20000);
+	ft_putstr("[Request failed]\n");
 	return (0);
 }

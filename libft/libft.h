@@ -6,7 +6,7 @@
 /*   By: lgeoffro <lgeoffro@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/28 15:05:34 by lgeoffro          #+#    #+#             */
-/*   Updated: 2021/07/15 20:24:46 by lgeoffro         ###   ########.fr       */
+/*   Updated: 2021/08/22 15:07:49 by lgeoffro         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,7 @@ typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
-}
-t_list;
+}	t_list;
 
 void	ft_lstadd_back(t_list **lst, t_list *new);
 void	ft_lstadd_front(t_list **lst, t_list *new);

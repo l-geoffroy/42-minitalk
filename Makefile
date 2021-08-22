@@ -6,7 +6,7 @@
 #    By: lgeoffro <lgeoffro@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/07/13 16:21:12 by lgeoffro          #+#    #+#              #
-#    Updated: 2021/08/21 11:55:43 by lgeoffro         ###   ########.fr        #
+#    Updated: 2021/08/22 14:10:27 by lgeoffro         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,10 +16,13 @@ CFLAGS = -Wall -Werror -Wextra -I includes/
 
 SERVER_SRC:= server/server.c \
 			 server/utils.c \
+			 server/lst_handler.c \
+			 server/utils2.c \
 
 SERVER = server/server
 
 CLIENT_SRC = client/client.c \
+			 client/utils.c \
 
 CLIENT = client/client
 
@@ -40,7 +43,7 @@ $(LIB):
 	make -C $(LIB_DIR)
 
 $(SERVER): $(SERVER_OBJ)
-	$(CC) -o $(SERVER) $(SERVER_OBJ) -L $(LIB_DIR) -l $(LIB_NAME) -g3 -fsanitize=address
+	$(CC) -o $(SERVER) $(SERVER_OBJ) -L $(LIB_DIR) -l $(LIB_NAME) -g -fsanitize=address
 
 $(CLIENT): $(CLIENT_OBJ)
 	$(CC) -o $(CLIENT) $(CLIENT_OBJ) -L $(LIB_DIR) -l $(LIB_NAME)
